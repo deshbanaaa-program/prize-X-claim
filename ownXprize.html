@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - 7S Area group</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: #111;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 30px 20px;
+    }
+
+    .glass-panel {
+      width: 100%;
+      max-width: 1300px;
+      background: rgba(10, 10, 10, 0.7);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 50px;
+      padding: 40px;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9), inset 0 1px 1px rgba(255, 255, 255, 0.06);
+    }
+
+    h1 {
+      font-size: 3rem;
+      font-weight: 300;
+      background: linear-gradient(145deg, #ccc, #888);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+    }
+
+    .sub {
+      color: #666;
+      margin-bottom: 40px;
+      border-bottom: 1px solid #222;
+      padding-bottom: 15px;
+    }
+
+    .admin-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 30px;
+    }
+
+    .card {
+      background: rgba(30, 30, 30, 0.5);
+      border-radius: 30px;
+      padding: 25px;
+      border: 1px solid #2a2a2a;
+      backdrop-filter: blur(8px);
+    }
+
+    .card-title {
+      color: #e0e0e0;
+      font-size: 1.8rem;
+      font-weight: 300;
+      margin-bottom: 25px;
+      border-left: 5px solid #7a7a7a;
+      padding-left: 20px;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .input-group input, .input-group select {
+      flex: 1;
+      padding: 15px;
+      background: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 20px;
+      color: #fff;
+    }
+
+    .btn {
+      background: #2a2a2a;
+      border: 1px solid #444;
+      color: white;
+      padding: 15px 30px;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: 0.2s;
+      font-weight: 600;
+    }
+
+    .btn:hover {
+      background: #3a3a3a;
+      border-color: #666;
+    }
+
+    .btn-danger {
+      background: #3a1a1a;
+      border-color: #8b0000;
+    }
+
+    .btn-danger:hover {
+      background: #5a2a2a;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      color: #ccc;
+    }
+
+    th {
+      text-align: left;
+      padding: 15px 10px;
+      border-bottom: 2px solid #333;
+      color: #aaa;
+      font-weight: 400;
+    }
+
+    td {
+      padding: 15px 10px;
+      border-bottom: 1px solid #2a2a2a;
+    }
+
+    .badge {
+      background: #1e3a2e;
+      color: #9ccc9c;
+      padding: 5px 12px;
+      border-radius: 50px;
+      font-size: 0.8rem;
+    }
+
+    .checkbox-done {
+      transform: scale(1.3);
+      accent-color: #4caf50;
+      cursor: pointer;
+    }
+
+    .action-btn {
+      background: none;
+      border: 1px solid #444;
+      color: #ff8a8a;
+      padding: 5px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .action-btn:hover {
+      background: #442222;
+    }
+
+    .limit-control {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-top: 30px;
+      background: #1a1a1a;
+      padding: 20px;
+      border-radius: 30px;
+    }
+  </style>
+</head>
+<body>
+  <div class="glass-panel">
+    <h1>OWNER PANEL</h1>
+    <div class="sub">7S Area group — manajemen klaim hadiah</div>
+
+    <div class="admin-grid">
+      <!-- Kolom kiri: manajemen hadiah & limit -->
+      <div class="card">
+        <div class="card-title">📦 Kelola Hadiah</div>
+        <div class="input-group">
+          <input type="text" id="newPrizeName" placeholder="Nama hadiah baru (contoh: Voucher)">
+          <select id="newPrizeFrom">
+            <option value="Kapten">Kapten</option>
+            <option value="Officer">Officer</option>
+            <option value="Sponsor">Sponsor</option>
+          </select>
+          <button class="btn" id="addPrizeBtn">Tambah</button>
+        </div>
+        <div style="margin-top: 15px;" id="prizeListContainer">
+          <!-- Daftar hadiah akan di-render via JS -->
+        </div>
+
+        <div class="limit-control">
+          <span style="color:#ccc;">🔁 Reset limit semua user (tahun 2027)</span>
+          <button class="btn" id="resetLimitBtn">Reset Sekarang</button>
+        </div>
+        <p style="color:#555; margin-top: 10px;">* Reset akan menghapus semua data klaim dan membuka akses klaim baru.</p>
+      </div>
+
+      <!-- Kolom kanan: data klaim -->
+      <div class="card">
+        <div class="card-title">📋 Riwayat Klaim</div>
+        <div style="overflow-x: auto;">
+          <table id="claimTable">
+            <thead>
+              <tr>
+                <th>Hadiah</th>
+                <th>Detail</th>
+                <th>Code</th>
+                <th>Status</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="claimTableBody">
+              <!-- diisi js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // Data disimpan di localStorage
+      const CLAIM_KEY = 'userClaim';
+      const PRIZES_KEY = 'adminPrizes';
+
+      // Inisialisasi default hadiah jika belum ada
+      let prizes = JSON.parse(localStorage.getItem(PRIZES_KEY));
+      if (!prizes) {
+        prizes = [
+          { id: 'diamond_kapten', name: 'Diamond Free Fire', from: 'Kapten Guild' },
+          { id: 'diamond_officer', name: 'Diamond Free Fire', from: 'Officer Guild' },
+          { id: 'uang', name: 'Uang (Transfer)', from: 'Officer Guild' },
+          { id: 'pulsa', name: 'Transfer Pulsa', from: 'Officer Guild' }
+        ];
+        localStorage.setItem(PRIZES_KEY, JSON.stringify(prizes));
+      }
+
+      let claimData = JSON.parse(localStorage.getItem(CLAIM_KEY));
+
+      // Render tabel klaim
+      function renderClaimTable() {
+        const tbody = document.getElementById('claimTableBody');
+        if (!claimData) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:40px;">Belum ada klaim</td></tr>';
+          return;
+        }
+
+        let detail = '';
+        if (claimData.prize.includes('diamond')) {
+          detail = `Nick: ${claimData.formData.nickname}, ID: ${claimData.formData.idff}`;
+        } else if (claimData.prize === 'uang') {
+          detail = `${claimData.formData.paymentMethod}: ${claimData.formData.accountNumber}`;
+        } else if (claimData.prize === 'pulsa') {
+          detail = `${claimData.formData.operator}: ${claimData.formData.phoneNumber}`;
+        }
+
+        const statusDone = claimData.done ? 'Selesai' : 'Pending';
+        const checked = claimData.done ? 'checked' : '';
+
+        tbody.innerHTML = `
+          <tr>
+            <td>${claimData.prizeName}</td>
+            <td>${detail}</td>
+            <td><span class="badge">${claimData.code}</span></td>
+            <td><input type="checkbox" class="checkbox-done" id="statusCheck" ${checked}></td>
+            <td><button class="action-btn" id="deleteClaimBtn">Hapus</button></td>
+          </tr>
+        `;
+
+        // Event listener untuk checkbox status
+        document.getElementById('statusCheck')?.addEventListener('change', function(e) {
+          claimData.done = e.target.checked;
+          localStorage.setItem(CLAIM_KEY, JSON.stringify(claimData));
+        });
+
+        // Hapus klaim
+        document.getElementById('deleteClaimBtn')?.addEventListener('click', function() {
+          if (confirm('Hapus data klaim ini?')) {
+            localStorage.removeItem(CLAIM_KEY);
+            claimData = null;
+            renderClaimTable();
+            renderPrizeList(); // untuk update tombol reset mungkin
+          }
+        });
+      }
+
+      // Render daftar hadiah (untuk dikelola)
+      function renderPrizeList() {
+        const container = document.getElementById('prizeListContainer');
+        let html = '<ul style="list-style:none; color:#ccc;">';
+        prizes.forEach((prize, index) => {
+          html += `
+            <li style="display:flex; justify-content:space-between; align-items:center; background:#1a1a1a; margin-bottom:10px; padding:12px 20px; border-radius:20px;">
+              <span>${prize.name} <span style="color:#888;">(${prize.from})</span></span>
+              <button class="action-btn" data-index="${index}" style="color:#ffa07a;">Hapus</button>
+            </li>
+          `;
+        });
+        html += '</ul>';
+        container.innerHTML = html;
+
+        // Tambahkan event hapus
+        document.querySelectorAll('[data-index]').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const idx = e.target.dataset.index;
+            if (prizes.length <= 1) {
+              alert('Minimal satu hadiah harus ada.');
+              return;
+            }
+            prizes.splice(idx, 1);
+            localStorage.setItem(PRIZES_KEY, JSON.stringify(prizes));
+            renderPrizeList();
+          });
+        });
+      }
+
+      // Tambah hadiah
+      document.getElementById('addPrizeBtn').addEventListener('click', () => {
+        const name = document.getElementById('newPrizeName').value.trim();
+        const from = document.getElementById('newPrizeFrom').value;
+        if (!name) {
+          alert('Nama hadiah tidak boleh kosong');
+          return;
+        }
+        const newId = 'prize_' + Date.now() + Math.random().toString(36).substr(2, 4);
+        prizes.push({ id: newId, name: name, from: from + ' Guild' });
+        localStorage.setItem(PRIZES_KEY, JSON.stringify(prizes));
+        document.getElementById('newPrizeName').value = '';
+        renderPrizeList();
+      });
+
+      // Reset limit (hapus claim)
+      document.getElementById('resetLimitBtn').addEventListener('click', () => {
+        if (confirm('Reset semua klaim? User bisa klaim lagi.')) {
+          localStorage.removeItem(CLAIM_KEY);
+          claimData = null;
+          renderClaimTable();
+          renderPrizeList(); // refresh
+        }
+      });
+
+      // Inisialisasi
+      renderClaimTable();
+      renderPrizeList();
+    })();
+  </script>
+</body>
+</html>
